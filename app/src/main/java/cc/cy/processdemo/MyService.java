@@ -41,6 +41,7 @@ public class MyService extends Service {
 
         @Override
         public boolean onTransact(int code, Parcel data, Parcel reply, int flags) throws RemoteException {
+            //通信包名验证
             String packageName = "";
             String[] packageNames = getPackageManager().getPackagesForUid(getCallingUid());
             if (packageNames != null && packageNames.length > 0) {
@@ -55,6 +56,7 @@ public class MyService extends Service {
     @Override
     public IBinder onBind(Intent intent) {
         // TODO: Return the communication channel to the service.
+        //自定义权限验证
         if (checkCallingOrSelfPermission("cc.cy.processdemo.MyService_Permission") == PackageManager.PERMISSION_DENIED)
             return null;
         return mBinder;
@@ -65,6 +67,7 @@ public class MyService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
+        //执行耗时任务
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -77,9 +80,8 @@ public class MyService extends Service {
                     }
                     MsgModel msgModel = new MsgModel();
                     msgModel.id = i;
-                    msgModel.content = "aaaaaaaa" + i;
+                    msgModel.content = "跨进程通信Demo" + i;
                     final int callbackListCount = mRemoteCallbackList.beginBroadcast();
-                    Log.i(TAG, "---------" + callbackListCount);
                     for (int j = 0; j < callbackListCount; j++) {
                         MsgReceiver msgReceiver = mRemoteCallbackList.getBroadcastItem(j);
                         try {
